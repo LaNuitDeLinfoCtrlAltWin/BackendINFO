@@ -1,0 +1,6 @@
+@BACK_Nuit2Info_HostAddress = http://localhost:5023
+
+GET {{BACK_Nuit2Info_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
