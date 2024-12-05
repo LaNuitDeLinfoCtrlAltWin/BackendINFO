@@ -1,0 +1,33 @@
+name: building-&-publishing-container-image
+on:
+  push:
+    branches:
+      - release 
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v4
+
+      # Build container image using Buildah Build
+      - name: 'Build image'
+        id: build-image # used for the push step to retrive constructed image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: backend-info-image
+          tags: latest
+          containerfiles: Dockerfile
+
+      - name: 'Push to ghcr.io'
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          # Retrieve the constructed image from the previous step
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          # login against github registry 
+          registry: ghcr.io/LaNuitDeLinfoCtrlAltWin
+          username: LaNuitDeLinfoCtrlAltWin
+          password: ${{ secrets.GITHUB_TOKEN }}
