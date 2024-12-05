@@ -1,20 +1,32 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Ajouter CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost5173", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Adresse de votre frontend
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
+// Ajouter les services au conteneur
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure le pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowLocalhost5173");
 
 app.UseAuthorization();
 
