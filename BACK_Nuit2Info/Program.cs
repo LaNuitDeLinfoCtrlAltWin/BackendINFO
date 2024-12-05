@@ -5,8 +5,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost5173", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Adresse de votre frontend
+        policy.SetIsOriginAllowed(origin => true) // allow any origin // Adresse de votre frontend
               .AllowAnyHeader()
+              .AllowCredentials()
               .AllowAnyMethod();
     });
 });
