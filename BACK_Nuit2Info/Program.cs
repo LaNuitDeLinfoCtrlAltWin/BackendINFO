@@ -1,3 +1,9 @@
+using BACK_Nuit2Info;
+
+var root = Directory.GetCurrentDirectory();
+var dotenv = Path.Combine(root, ".env");
+DotEnv.Load(dotenv);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Ajouter CORS
