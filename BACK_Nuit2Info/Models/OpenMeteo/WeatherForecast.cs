@@ -29,6 +29,12 @@ namespace OpenMeteo
         /// </summary>
         [JsonPropertyName("generationtime_ms")]
         public float GenerationTime { get; set; }
+        
+        [JsonPropertyName("current_weather_units")]
+        public object CurrentWeatherUnits { get; set; }
+        
+        [JsonPropertyName("current_weather")]
+        public object CurrentWeather { get; set; }
 
         /// <summary>
         /// Applied timezone offset from 
