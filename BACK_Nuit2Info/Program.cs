@@ -1,4 +1,5 @@
 using BACK_Nuit2Info;
+using Microsoft.Net.Http.Headers;
 
 var root = Directory.GetCurrentDirectory();
 var dotenv = Path.Combine(root, ".env");
@@ -16,6 +17,12 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowCredentials()
               .AllowAnyMethod();
+    });
+    options.AddPolicy("AllowHeaders", builder =>
+    {
+        builder.WithOrigins("https://frontendinfo.onrender.com")
+              .SetIsOriginAllowed(origin => true) // allow any origin
+                .WithHeaders(HeaderNames.ContentType, HeaderNames.Server, HeaderNames.AccessControlAllowHeaders, HeaderNames.AccessControlExposeHeaders, "x-custom-header", "x-path", "x-record-in-use", HeaderNames.ContentDisposition);
     });
 });
 
