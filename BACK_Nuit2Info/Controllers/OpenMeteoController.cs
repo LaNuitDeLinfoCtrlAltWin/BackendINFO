@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using OpenMeteo;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,6 +17,8 @@ namespace BACK_Nuit2Info.Controllers
     {
         private readonly OpenMeteoClient _openMeteoClient;
         private readonly string _weatherApiUrl = Environment.GetEnvironmentVariable("WEATHER_API_URL");
+        private readonly string _marineApiUrl = Environment.GetEnvironmentVariable("MARINE_API_URL");
+
         private readonly HttpController httpController;
 
         public WeatherController()
@@ -117,7 +120,7 @@ List<LocationData> LocationDatas = new List<LocationData>
         /// <returns>Données météo actuelles pour toutes les coordonnées</returns>
         /// 
 
-        [HttpGet(Name = "GetWeatherData")]
+        [HttpGet("weather")]
 
         public async Task<List<OpenMeteo.WeatherForecast>?> GetWeatherData()
         {
@@ -136,6 +139,37 @@ List<LocationData> LocationDatas = new List<LocationData>
                 );
 
                 return weatherData;
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"Erreur API : {e.Message}");
+                return null;
+            }
+        }
+
+        [HttpGet("ocean-direction")]
+        public async Task<string?> GetOceanDirectionData()
+        {
+            try
+            {
+                var latitudes = string.Join(",", LocationDatas.Select(loc => loc.Latitude.ToString(CultureInfo.InvariantCulture)));
+                var longitudes = string.Join(",", LocationDatas.Select(loc => loc.Longitude.ToString(CultureInfo.InvariantCulture)));
+                var url = $"{_marineApiUrl}?latitude={latitudes}&longitude={longitudes}&current=ocean_current_velocity,ocean_current_direction";
+
+                HttpResponseMessage response = await httpController.Client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseContent = await response.Content.ReadAsStringAsync();
+//                var options = new JsonSerializerOptions   
+//                {
+//                    PropertyNameCaseInsensitive = true,
+//                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+//                };
+//                var oceanData = await JsonSerializer.DeserializeAsync<List<OpenMeteo.OceanData>>(
+//    await response.Content.ReadAsStreamAsync(),
+//    options
+//);
+
+                return responseContent;
             }
             catch (HttpRequestException e)
             {
